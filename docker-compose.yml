@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  server:
+    container_name: ampere
+    image: ampere
+    build: .
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: ./data
+        target: /application/data
+    environment:
+      DISCORD_TOKEN: ${DISCORD_TOKEN}

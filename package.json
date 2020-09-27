@@ -1,0 +1,30 @@
+{
+  "name": "ampere",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "concurrently npm:start:typescript npm:start:nodemon",
+    "start:typescript": "tsc --watch",
+    "start:nodemon": "nodemon --watch dist --watch .env --watch tsconfig.json --watch package.json --exec npm run start:node",
+    "start:node": "node --enable-source-maps --unhandled-rejections=strict --throw-deprecation --trace-warnings --experimental-top-level-await dist/entrypoint.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "debug": "^4.1.1",
+    "discord.js": "^12.3.1",
+    "dotenv": "^8.2.0",
+    "mime-types": "^2.1.27"
+  },
+  "devDependencies": {
+    "@types/debug": "^4.1.5",
+    "@types/dotenv": "^8.2.0",
+    "@types/mime-types": "^2.1.0",
+    "@types/node": "^14.6.0",
+    "@types/ws": "^7.2.6",
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.4",
+    "typescript": "^4.0.2"
+  }
+}
