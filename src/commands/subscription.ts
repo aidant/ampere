@@ -1,6 +1,6 @@
 import { Message } from 'discord.js'
 import { subscriptions } from '../models/subscriptions.js'
-import { GraphicsCard } from '../services/nvidia.js'
+import { GraphicsCard } from '../types.js'
 
 export const command = async (context: Message, action: string, ...segments: string[]) => {
   const message = segments.join(' ')

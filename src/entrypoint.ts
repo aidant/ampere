@@ -13,7 +13,8 @@ import 'dotenv/config.js'
 import { configuration } from './configuration.js'
 import { notificationChannel } from './models/notification-channel.js'
 import { subscriptions } from './models/subscriptions.js'
-import { getNameFromGraphicsCard, getUrlFromGraphicsCard, subscribeToStockStatus } from './services/nvidia.js'
+import * as bestbuy from './services/best-buy.js'
+import * as nvidia from './services/nvidia.js'
 import { log } from './utilities/log.js'
 
 const client = new Discord.Client()
@@ -42,7 +43,7 @@ client.on('message', async (message) => {
   }
 })
 
-subscribeToStockStatus(async (gpu, { isAvailable }) => {
+nvidia.subscribeToStockStatus(async (gpu, { isAvailable }) => {
   if (!isAvailable) return
 
   const users = (await subscriptions.get(gpu))
@@ -53,6 +54,21 @@ subscribeToStockStatus(async (gpu, { isAvailable }) => {
     const guild = await client.guilds.fetch(guildId)
     const channel = guild.channels.resolve(channelId) as TextChannel
 
-    await channel.send(`${getNameFromGraphicsCard(gpu)} is in stock.\n${getUrlFromGraphicsCard(gpu)}\n${users}`)
+    await channel.send(`${nvidia.getNameFromGraphicsCard(gpu)} is in stock.\n${nvidia.getUrlFromGraphicsCard(gpu)}\n${users}`)
+  }
+})
+
+bestbuy.subscribeToStockStatus(async (gpu, { isAvailable }) => {
+  if (!isAvailable) return
+
+  const users = (await subscriptions.get(gpu))
+    .map((user) => `<@${user}>`)
+    .join(' ')
+
+  for (const [guildId, channelId] of notificationChannel) {
+    const guild = await client.guilds.fetch(guildId)
+    const channel = guild.channels.resolve(channelId) as TextChannel
+
+    await channel.send(`${bestbuy.getNameFromGraphicsCard(gpu)} is in stock.\n${bestbuy.getUrlFromGraphicsCard(gpu)}\n${users}`)
   }
 })

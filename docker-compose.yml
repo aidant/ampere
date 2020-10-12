@@ -6,6 +6,7 @@ services:
     image: ampere
     build: .
     restart: unless-stopped
+    ipc: host
     volumes:
       - type: bind
         source: ./data

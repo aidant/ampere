@@ -1,4 +1,5 @@
-FROM node:14-alpine
+FROM mcr.microsoft.com/playwright:bionic
+RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && apt-get install -y nodejs
 WORKDIR /application
 COPY ./package.json ./package-lock.json ./
 RUN npm ci

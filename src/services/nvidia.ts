@@ -1,10 +1,10 @@
 import axios from 'axios'
+import { configuration } from '../configuration.js'
+import { GraphicsCard, Status, Subscription } from '../types.js'
+import { namespace } from '../utilities/log.js'
 import { setRandomInterval } from '../utilities/random-interval.js'
 
-export enum GraphicsCard {
-  RTX3080 = '5438481700',
-  RTX3090 = '5438481600',
-}
+const log = namespace('nvidia')
 
 export const getNameFromGraphicsCard = (gpu: GraphicsCard) => {
   if (gpu === GraphicsCard.RTX3080) return 'RTX 3080'
@@ -27,9 +27,7 @@ interface Products {
   }
 }
 
-type Status = Record<GraphicsCard, { isAvailable: boolean }>
-
-export const getStockStatus = async (...gpus: GraphicsCard[]): Promise<Status> => {
+const getStockStatus = async (...gpus: GraphicsCard[]): Promise<Status> => {
   const response = await axios.get<Products>(
     `https://api-prod.nvidia.com/direct-sales-shop/DR/products/en_us/USD/${gpus}`,
     {
@@ -43,9 +41,9 @@ export const getStockStatus = async (...gpus: GraphicsCard[]): Promise<Status> =
   const status: Status = {} as Status
 
   for (const product of response.data.products.product) {
-    status[product.id] = {
-      isAvailable: product.inventoryStatus.status !== 'PRODUCT_INVENTORY_OUT_OF_STOCK'
-    }
+    const isAvailable = product.inventoryStatus.status !== 'PRODUCT_INVENTORY_OUT_OF_STOCK'
+    log('isAvailable', isAvailable)
+    status[product.id] = { isAvailable }
   }
 
   return status
@@ -60,8 +58,6 @@ const status: Status = {
   }
 }
 
-type Subscription = (gpu: GraphicsCard, status: { isAvailable: boolean }) => void
-
 export const subscribeToStockStatus = (subscription: Subscription) => {
   setRandomInterval(async () => {
     try {
@@ -74,7 +70,7 @@ export const subscribeToStockStatus = (subscription: Subscription) => {
         }
       }
     } catch (error) {
-
+      log(error)
     }
-  }, 1000 * 60 * 5)
+  }, configuration.application.interval)
 }

@@ -1,5 +1,5 @@
 import { User } from 'discord.js'
-import { GraphicsCard } from '../services/nvidia.js'
+import { GraphicsCard } from '../types.js'
 import { Model } from '../utilities/model.js'
 
 class Subscriptions extends Model {
